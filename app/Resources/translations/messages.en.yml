@@ -1,0 +1,11 @@
+
+base:
+    title: Symfony Template
+
+navbar:
+     home: Home
+     services: Services
+     contact: Contact
+     language: Language
+     choose: Choose language
+     brand: symfo_tuto

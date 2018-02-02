@@ -1,0 +1,12 @@
+
+base:
+    title: Vue Symfony
+
+navbar:
+     home: Accueil
+     services: Service
+     contact: Contact
+     language: Langue
+     choose: Choix langue
+     brand: symfo_tuto
+     login: login

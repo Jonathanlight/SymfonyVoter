@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <!--Import Google Icon Font-->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <!--Let browser know website is optimized for mobile-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <!-- Compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+        {% block stylesheets %}{% endblock %}
+    </head>
+    <body>
+    <nav class="light-blue lighten-1" role="navigation">
+        <div class="nav-wrapper container"><a id="logo-container" href="{{ url('home') }}" class="brand-logo">Logo</a>
+
+            <ul class="right hide-on-med-and-down">
+                <li><a href="{{ url('login') }}">Login</a></li>
+                <li><a href="{{ url('register') }}">Register</a></li>
+                <li><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'fr'})) }}">fr</a></li>
+                <li><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">en</a></li>
+            </ul>
+
+
+            <ul id="nav-mobile" class="side-nav">
+                <li><a href="{{ url('edit') }}">Edit</a></li>
+                <li><a href="{{ url('show') }}">Show</a></li>
+                <li><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'fr'})) }}">fr</a></li>
+                <li><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">en</a></li>
+            </ul>
+            <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+        </div>
+    </nav>
+    <div class="section no-pad-bot" id="index-banner">
+        <div class="container">
+            <br><br>
+            <h1 class="header center green-text"> {{ 'base.title' | trans }}</h1>
+            <div class="row center">
+                <h5 class="header col s12 light">A modern responsive front-end framework based on Material Design</h5>
+            </div>
+            <br><br>
+
+        </div>
+    </div>
+    {% block body %}{% endblock %}
+    {% block javascripts %}{% endblock %}
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    </body>
+</html>
