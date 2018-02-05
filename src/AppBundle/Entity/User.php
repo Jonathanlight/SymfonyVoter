@@ -52,6 +52,15 @@ class User implements UserInterface
     private $roles;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="active", type="integer")
+     */
+    private $active;
+
+
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created", type="datetimetz")
@@ -186,6 +195,26 @@ class User implements UserInterface
     public function getCreated()
     {
         return $this->created;
+    }
+
+    /**
+     * Get active
+     *
+     * @return string
+     */
+    public function getActive()
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param string $active
+     *
+     * @return User
+     */
+    public function setActive($active)
+    {
+        $this->active = $active;
     }
 
 

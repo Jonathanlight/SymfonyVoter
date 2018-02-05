@@ -7,17 +7,22 @@ use AppBundle\Form\UserRegisterType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class DefaultController extends Controller
 {
     /**
      * @Route("/{_locale}", name="home", defaults={"_locale"="fr"})
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, UserInterface $user = null)
     {
+        if ($this->isGranted('EDIT', $user) == true){
+            dump($user);
+        }
+
         // replace this example code with whatever you need
         return $this->render('default/index.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
+            'user' => $user
         ]);
     }
 
@@ -26,7 +31,6 @@ class DefaultController extends Controller
      */
     public function editAction(Request $request)
     {
-        // replace this example code with whatever you need
         return $this->render('default/index.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
         ]);
