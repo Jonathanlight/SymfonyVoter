@@ -8,65 +8,140 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class UserVoter extends Voter
 {
-    // these strings are just invented: you can use anything
-    const VIEW = 'view';
-    const EDIT = 'edit';
+    const USER_VIEW_EDIT = 'user_view_edit';
+    const USER_EDIT_CURRENT = 'user_edit_current';
+    const USER_EDIT_PASSWORD = 'user_edit_password';
+    const USER_EDIT_OTHER = 'user_edit_other';
+    const USER_IMPORT_CSV = 'user_import_csv';
 
+    protected $attributes = [
+        self::USER_VIEW_EDIT,
+        self::USER_EDIT_CURRENT,
+        self::USER_EDIT_PASSWORD,
+        self::USER_EDIT_OTHER,
+        self::USER_IMPORT_CSV,
+    ];
+
+    /**
+     * @param string $attribute
+     * @param mixed $subject
+     * @return bool
+     */
     protected function supports($attribute, $subject)
     {
-        // if the attribute isn't one we support, return false
-        if (!in_array($attribute, array(self::VIEW, self::EDIT))) {
+        if (!in_array($attribute, $this->attributes)) {
             return false;
         }
-
-        // only vote on Post objects inside this voter
-        if (!$subject instanceof Post) {
-            return false;
-        }
-
-        return true;
+        return $subject instanceof User;
     }
 
+    /**
+     * @param string $attribute
+     * @param mixed $subject
+     * @param TokenInterface $token
+     * @return bool
+     */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
         $user = $token->getUser();
 
         if (!$user instanceof User) {
-            // the user must be logged in; if not, deny access
             return false;
         }
 
-        // you know $subject is a Post object, thanks to supports
-        /** @var Post $post */
-        $post = $subject;
-
         switch ($attribute) {
-            case self::VIEW:
-                return $this->canView($post, $user);
-            case self::EDIT:
-                return $this->canEdit($post, $user);
+            case self::USER_VIEW_EDIT:
+                return self::canViewAndEdit($user, $subject);
+            case self::USER_EDIT_CURRENT:
+                return self::canEditCurrent($user);
+            case self::USER_EDIT_PASSWORD:
+                return self::canEditPassword($user);
+            case self::USER_EDIT_OTHER:
+                return $this->canEditOtherUser($user, $subject);
+            case self::USER_IMPORT_CSV:
+                return self::canImportUserCsv($user);
+            default:
+                return false;
         }
-
-        throw new \LogicException('This code should not be reached!');
     }
 
-    private function canView(Post $post, User $user)
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public static function canViewAndEdit(User $user, User $subject = null)
     {
-        // if they can edit, they can view
-        if ($this->canEdit($post, $user)) {
+        if ($user->hasRole('ROLE_ADMIN')) {
             return true;
         }
 
-        // the Post object could have, for example, a method isPrivate()
-        // that checks a boolean $private property
-        return !$post->isPrivate();
+        if (!$user->getCompany()) {
+            return false;
+        }
+
+        if ($subject !== null && $subject->hasRole('ROLE_BAIL_OP')) {
+            return $user->hasRole('ROLE_BAIL_ADMIN');
+        }
+
+        if ($subject !== null && $subject->hasRole('ROLE_DIAG_OP')) {
+            return $user->hasRole('ROLE_DIAG_ADMIN');
+        }
+
+        return $user->hasRole('ROLE_DIAG_ADMIN')
+            || $user->hasRole('ROLE_BAIL_ADMIN');
     }
 
-    private function canEdit(Post $post, User $user)
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public static function canEditCurrent(User $user)
     {
-        // this assumes that the data object has a getOwner() method
-        // to get the entity of the user who owns this data object
-        return $user === $post->getOwner();
+        return $user->hasRole('ROLE_ADMIN')
+            || $user->hasRole('ROLE_DIAG_ADMIN')
+            || $user->hasRole('ROLE_BAIL_ADMIN');
     }
 
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public static function canEditPassword(User $user)
+    {
+        return $user->hasRole('ROLE_ADMIN')
+            || $user->hasRole('ROLE_BAIL_ADMIN')
+            || $user->hasRole('ROLE_DIAG_ADMIN')
+            || $user->hasRole('ROLE_BAIL_OP')
+            || $user->hasRole('ROLE_DIAG_OP');
+    }
+
+    /**
+     * @param User $user
+     * @param User $subject
+     * @return bool
+     */
+    private function canEditOtherUser(User $user, User $subject)
+    {
+        if ($user->getId() === $subject->getId()) {
+            return true;
+        }
+
+        if ($user->hasRole('ROLE_ADMIN')) {
+            return true;
+        }
+
+        $lessorOk = !$user->getCompany() || !$subject->getCompany() || $user->getCompany()->getId() === $subject->getCompany()->getId();
+        $rightsOk = $user->hasRole('ROLE_BAIL_ADMIN') && $subject->hasRole('ROLE_BAIL_OP') || $user->hasRole('ROLE_DIAG_ADMIN') && $subject->hasRole('ROLE_DIAG_OP');
+
+        return $lessorOk && $rightsOk;
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public static function canImportUserCsv(User $user)
+    {
+        return $user->hasRole('ROLE_ADMIN');
+    }
 }
