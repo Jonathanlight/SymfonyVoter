@@ -16,11 +16,10 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request, UserInterface $user = null)
     {
-        if ($this->isGranted('EDIT', $user) == true){
+        if ($this->isGranted('IS_USER_ACTIVE', $user) == true){
             dump($user);
         }
 
-        // replace this example code with whatever you need
         return $this->render('default/index.html.twig', [
             'user' => $user
         ]);

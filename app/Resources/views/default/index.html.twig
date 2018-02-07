@@ -10,7 +10,7 @@
                         <h2 class="center light-blue-text"><i class="material-icons">flash_on</i></h2>
                         <h5 class="center">
                             User is
-                            {% if is_granted('EDIT', user) %}
+                            {% if is_granted('IS_USER_ACTIVE', user) %}
                                 Active
                             {% else %}
                                 Not Active

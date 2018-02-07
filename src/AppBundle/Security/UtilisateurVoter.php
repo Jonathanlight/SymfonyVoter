@@ -14,7 +14,7 @@ class UtilisateurVoter implements  VoterInterface{
             return self::ACCESS_ABSTAIN;
         }
 
-        if (!in_array('EDIT', $attributes)){
+        if (!in_array('IS_USER_ACTIVE', $attributes)){
             return self::ACCESS_ABSTAIN;
         }
 
@@ -24,6 +24,8 @@ class UtilisateurVoter implements  VoterInterface{
             return self::ACCESS_DENIED;
         }
 
+        //if user is not active
+        //si l'utilisateur n'est pas active
         if ($user->getActive() === 0){
             return self::ACCESS_DENIED;
         }
@@ -31,3 +33,5 @@ class UtilisateurVoter implements  VoterInterface{
         return self::ACCESS_GRANTED;
     }
 }
+
+

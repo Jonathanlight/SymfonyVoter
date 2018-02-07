@@ -4,3 +4,5 @@ services:
         class: AppBundle\Security\UtilisateurVoter
         tag:
             - { name: security.voter }
+
+

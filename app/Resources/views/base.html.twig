@@ -25,8 +25,6 @@
 
 
             <ul id="nav-mobile" class="side-nav">
-                <li><a href="{{ url('edit') }}">Edit</a></li>
-                <li><a href="{{ url('show') }}">Show</a></li>
                 <li><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'fr'})) }}">fr</a></li>
                 <li><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">en</a></li>
             </ul>
@@ -36,7 +34,7 @@
     <div class="section no-pad-bot" id="index-banner">
         <div class="container">
             <br><br>
-            <h1 class="header center green-text"> {{ 'base.title' | trans }}</h1>
+            <h1 class="header center green-text"> {{ 'base.title' | trans }} </h1>
         </div>
     </div>
     {% block body %}{% endblock %}
